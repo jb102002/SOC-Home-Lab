@@ -12,7 +12,3 @@ Project Summary
 
 <img width="1554" height="730" alt="image" src="https://github.com/user-attachments/assets/af0b512c-4ceb-4d7c-b5cf-1ad1ccad9677" />
 
-
-
-<img width="779" height="659" alt="image" src="https://github.com/user-attachments/assets/7bf70fcd-030a-4840-8eb4-bb817202ac25" />
-

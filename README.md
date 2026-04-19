@@ -11,23 +11,23 @@ Project Summary
 
 
 
+SSH into Splunk Server
 
+ssh -i "C:\Users\jacob\OneDrive\Desktop\AWS SOC Lab Terra\J.Boinski-Cloud-SOC-Lab-Terraform.pem" ubuntu@3.85.113.165
 
+NOTE: Before using SSH to connect to Splunk Instance you make have to change the file permissions of your .pem file where you stored your SHH key pair
 
-
-Before using SSH to connect to Splunk Instance you make have to change the file permissions of your .pem file where you stored your SHH key pair
-
-# Store the path in a variable to make it easier
+/ Store the path in a variable to make it easier
 $keyPath = "C:\Users\jacob\OneDrive\Desktop\AWS SOC Lab Terra\J.Boinski-Cloud-SOC-Lab-Terraform.pem"
 
-# Remove all inherited permissions
+/ Remove all inherited permissions
 icacls $keyPath /inheritance:r
 
-# Remove the BUILTIN\Users group access
+/ Remove the BUILTIN\Users group access
 icacls $keyPath /remove "BUILTIN\Users"
 
-# Remove EVERYONE access just in case
+/ Remove EVERYONE access just in case
 icacls $keyPath /remove "Everyone"
 
-# Give only your user account full access
+/ Give only your user account full access
 icacls $keyPath /grant:r "jacob:F"

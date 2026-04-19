@@ -13,7 +13,7 @@ Project Summary
 
 SSH into Splunk Server
 
-ssh -i "C:\Users\jacob\OneDrive\Desktop\AWS SOC Lab Terra\J.Boinski-Cloud-SOC-Lab-Terraform.pem" ubuntu@1.2.3.4
+ssh -i "C:\Users\user\AWS SOC Lab Terra\example.pem" ubuntu@1.2.3.4
 
 NOTE: Before using SSH to connect to Splunk Instance you make have to change the file permissions of your .pem file where you stored your SHH key pair
 

@@ -9,6 +9,11 @@
             
 Project Summary 
 
+terraform init
+terraform plan
+terraform apply -var="aws-key=INSERT YOUR KEY NAME HERE"
+
+
 *Have to put terraform.exec in PATH
 
 SSH into Splunk Server

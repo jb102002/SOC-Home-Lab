@@ -9,7 +9,7 @@
             
 Project Summary 
 
-
+*Have to put terraform.exec in PATH
 
 SSH into Splunk Server
 

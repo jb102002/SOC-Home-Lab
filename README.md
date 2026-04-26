@@ -39,4 +39,11 @@ icacls $keyPath /grant:r "user:F"
 
 
 
-*sudo tar xvzf * must run sudo to extract to /opt
+1. *sudo tar xvzf * must run sudo to extract to /opt
+
+2. export SPLUNK_HOME=/opt/splunk
+$SPLUNK_HOME/bin/splunk start --accept-license
+
+3. sudo chown -R ubuntu:ubuntu /opt/splunk *Ubuntu user does not own splunk folder*
+
+sudo /opt/splunk/bin/splunk enable boot-start -user ubuntu *enable splunk to start on boot

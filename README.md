@@ -36,3 +36,7 @@ icacls $keyPath /remove "Everyone"
 
  Give only your user account full access
 icacls $keyPath /grant:r "user:F"
+
+
+
+*sudo tar xvzf * must run sudo to extract to /opt

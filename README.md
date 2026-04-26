@@ -38,7 +38,7 @@ icacls $keyPath /remove "Everyone"
 icacls $keyPath /grant:r "user:F"
 
 
-
+#Configuring splunk server
 1. *sudo tar xvzf * must run sudo to extract to /opt
 
 2. export SPLUNK_HOME=/opt/splunk
@@ -47,3 +47,8 @@ $SPLUNK_HOME/bin/splunk start --accept-license
 3. sudo chown -R ubuntu:ubuntu /opt/splunk *Ubuntu user does not own splunk folder*
 
 sudo /opt/splunk/bin/splunk enable boot-start -user ubuntu *enable splunk to start on boot
+
+#Configuring universal forwarder on victim machine
+Script ran but had problem, I think the splunk universal forwarder path was not correct and needed to log in to website to get correct command
+
+

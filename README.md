@@ -1,10 +1,79 @@
-      _          _                 _           _           
-     | |        | |               | |         | |          
-     | |__   ___| |__   ___   ___ | |__   ___ | |__  _ __  
-     | '_ \ / _ \ '_ \ / _ \ / _ \| '_ \ / _ \| '_ \| '_ \ 
-     | | | |  __/ |_) | (_) | (_) | |_) | (_) | | | | | | |
-     |_| |_|\___|_.__/ \___/ \___/|_.__/ \___/|_| |_|_| |_|
-            J a c o b ' s   S O C   H o m e   L a b
+
+#            My AWS Cloud SOC Home Lab with Terraform
+
+## Table of Contents
+1. Lab Overview
+2. Architecture
+3. Prerequisites
+4. Terraform Files
+5. Deploying the Lab
+6. Post-Deployment Configuration
+7. Intalling Splunk
+8. Configuring the Windows Victim
+9. Installing the SUF
+10. Fixing Sysmon Permissions
+11. Verifying Logs in Splunk
+12. Running Attacks from Kali
+13. What to Look For in Splunk
+14. Cost Management
+15. Troubleshooting
+16. Key Splunk Searches
+
+---
+
+## Lab Overview
+
+This is my cloud-based Security Operations Center (SOC) home lab built on AWS using Terraform. 
+This lab simulates a real SOC environment where you can:
+- Run attacks from a Kali Linux machine against a Windows Victim
+- Detect and investigate those attacks using Splunk SIEM
+- Learn how Sysmon enriches Windows logs with detailed threat hunting data
+- Practice the same detection workflows used by real SOC analysts
+
+### What's in the Lab
+
+| Machine | Role | Instance Type | OS |
+|---|---|---|---|
+| Splunk Server | SIEM - collects and searches all logs | m7i-flex.large | Ubuntu 22.04 |
+| Windows Victim | Target machine - generates logs | t3.small | Windows Server 2022 | 
+| Kali Attacker | Attack machine - runs offensive tooling | t3.small | Kali Linux |
+
+### Log Flow
+```
+Windows Victim
+├Sysmon
+|    ├EventID 1  - process creation
+|    ├EventID 3  - network connection
+|    ├EventID 11 - file created
+|    └EventID 13 - registry modified
+├Windows Event Logs
+|    ├Security    - logins, failed auth, privileges
+|    ├System      - services, drivers, OS events
+|    └Application - software errors, crashes
+└Splunk Universal Forwarder (collects both above)
+     └Splunk Server - port 9997
+          ├index="sysmon"
+          ├index="windows"
+          └Splunk web UI - port 8000                             
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             
             
 Project Summary 

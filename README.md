@@ -57,7 +57,11 @@ Windows Victim
           └Splunk web UI - port 8000                             
 ```
 
+## Architecture
 
+<img width="636" height="630" alt="image" src="https://github.com/user-attachments/assets/bf34485b-e463-49d5-8599-f32a2ee7af3c" />
+
+## Prerequisites
 
 
 

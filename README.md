@@ -2,6 +2,7 @@
 #            My AWS Cloud SOC Home Lab with Terraform
 
 ## Table of Contents
+
 1. Lab Overview
 2. Architecture
 3. Prerequisites
@@ -39,6 +40,7 @@ This lab simulates a real SOC environment where you can:
 | Kali Attacker | Attack machine - runs offensive tooling | t3.small | Kali Linux |
 
 ### Log Flow
+
 ```
 Windows Victim
 ├Sysmon
@@ -96,6 +98,7 @@ This lab is defined across 5 Terraform files. Save all files in the same folder.
 - windows_userdata.ps1 - PowerShell script that runs on Windows first boot (Configures SUF and Sysmon on boot. Saves a lot of time... trust me xD)
 
 #### variables.tf
+
 Edit these defaults before deploying:
 
 | Variable | Default | What to Change |
@@ -103,6 +106,20 @@ Edit these defaults before deploying:
 | aws_region | us-east-2 | Change if you prefer a different region |
 | aws_key | YOUR KEY NAME HERE | Replace with your actual AWS key pair name (The one you made back in Step 4 of prequisites) | 
 | my_public_ip | YOUR PUBLIC IP HERE/32 | Replace with your IP in CIDR format |
+
+---
+
+## Deploying the Lab
+
+> **Note:** I deployed the Lab using powershell. Deploying the lab using other operating systems may require different steps than these! 
+
+### Step 1 - Configure AWS credentials
+
+Install the AWS CLI then run:
+```powershell
+aws configure
+```
+
 
 
 

@@ -104,14 +104,12 @@ Edit these defaults before deploying:
 | Variable | Default | What to Change |
 |---|---|---|
 | aws_region | us-east-2 | Change if you prefer a different region |
-| aws_key | YOUR KEY NAME HERE | Replace with your actual AWS key pair name (The one you made back in Step 4 of prequisites) | 
+| aws_key | YOUR KEY NAME HERE | Replace with your actual AWS key pair name (The one you made back in Step 4 of the Prequisites section) | 
 | my_public_ip | YOUR PUBLIC IP HERE/32 | Replace with your IP in CIDR format |
 
 ---
 
 ## Deploying the Lab
-
-> **Note:** I deployed the Lab using powershell. Deploying the lab using other operating systems may require different steps than these! 
 
 ### Step 1 - Configure AWS credentials
 
@@ -125,9 +123,23 @@ Edit these defaults before deploying:
   - Choose the "Other" use case
   - Copy your secret access key and save to a Notepad file (You will not be able to access this private key again)
 
-3. >[!Install the AWS CLI then run:
-
-
+3. Install the AWS CLI then run:
+> **Note:** I configured the AWS CLI within an Ubuntu WSL on my Windows computer however, the Windows steps can be found in the link in Step 2 of the Prerequisites section
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+Navigate to your new AWS directory created above and create a new credentials file
+```bash
+nano credentials
+```
+In your credentials file add the following:
+```
+[default]
+aws_access_key_id = REPLACE_THIS_WITH_YOUR_PUBLIC_ACCESS_KEY
+aws_secret_access_key = REPLACE_THIS_WITH_YOUR_PRIVATE_ACCESS_KEY
+```
 
 
 

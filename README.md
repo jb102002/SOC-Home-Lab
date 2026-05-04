@@ -115,10 +115,19 @@ Edit these defaults before deploying:
 
 ### Step 1 - Configure AWS credentials
 
-Install the AWS CLI then run:
-```powershell
-aws configure
-```
+1. Configure New User in AWS
+  - Go to AWS Console -> IAM -> IAM Users -> Create User
+  - Create a username
+  - Attach policies directly (AmazonVPCFullAccess + AmazonEC2FullAccess)
+
+2. Create an Access Key
+  - Under your newly created IAM User, create access key
+  - Choose the "Other" use case
+  - Copy your secret access key and save to a Notepad file (You will not be able to access this private key again)
+
+3. >[!Install the AWS CLI then run:
+
+
 
 
 

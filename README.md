@@ -72,12 +72,12 @@ Before deploying the lab you need:
 2. AWS CLI installed - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 3. Terraform installed - https://developer.hashicorp.com/terraform/install#windows
 4. An AWS Key Pair created in your target region
-  -Go to AWS Console -> EC2 -> Key Pairs -> Create Key Pair (Key pair type should remain RSA  and the Private Key file        format should be changed to .pem if not already)
-     -Download the .pem file and keep it safe (you will need it to SSH later)
+  - Go to AWS Console -> EC2 -> Key Pairs -> Create Key Pair (Key pair type should remain RSA  and the Private Key file        format should be changed to .pem if not already)
+  - Download the .pem file and keep it safe (you will need it to SSH later)
 5. Your public IP address - go to https://whatismyip.com/
 6. Kali Linux AWS Marketplace subscription
-     -Go to AWS Marketplace -> search "Kali Linux" -> Subscribe (it is free)
-     -Required before Terraform can launch the Kali Instance
+  - Go to AWS Marketplace -> search "Kali Linux" -> Subscribe (it is free)
+  - Required before Terraform can launch the Kali Instance
 
 ---
 
@@ -88,7 +88,7 @@ This lab is defined across 5 Terraform files. Save all files in the same folder.
 ### File Structure
 
 - variables.tf - Stores all variables for use in all .tf files below
--config.tf - Sets the Cloud Provider and Version
+- config.tf - Sets the Cloud Provider and Version
 - main.tf - Provider, VPC, Subnet, Internet Gateway, and Route Table
 - instances.tf - AMI Lookups and EC2 Instances
 - security_groups.tf - Firewall rules for each machine

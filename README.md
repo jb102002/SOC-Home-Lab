@@ -72,7 +72,7 @@ Before deploying the lab you need:
 2. AWS CLI installed - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 3. Terraform installed - https://developer.hashicorp.com/terraform/install#windows
 4. An AWS Key Pair created in your target region
-     -Go to AWS Console -> EC2 -> Key Pairs -> Create Key Pair (Key pair type should remain RSA  and the Private Key file        format should be changed to .pem if not already)
+  -Go to AWS Console -> EC2 -> Key Pairs -> Create Key Pair (Key pair type should remain RSA  and the Private Key file        format should be changed to .pem if not already)
      -Download the .pem file and keep it safe (you will need it to SSH later)
 5. Your public IP address - go to https://whatismyip.com/
 6. Kali Linux AWS Marketplace subscription
@@ -101,7 +101,7 @@ Edit these defaults before deploying:
 | Variable | Default | What to Change |
 |---|---|---|
 | aws_region | us-east-2 | Change if you prefer a different region |
-| aws_key | YOUR KEY NAME HERE | Replace with your actual AWS key pair name (The one you made back in Step 4 of prequisites | 
+| aws_key | YOUR KEY NAME HERE | Replace with your actual AWS key pair name (The one you made back in Step 4 of prequisites) | 
 | my_public_ip | YOUR PUBLIC IP HERE/32 | Replace with your IP in CIDR format |
 
 

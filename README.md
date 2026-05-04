@@ -125,8 +125,8 @@ Edit these defaults before deploying:
 
 3. #### Install the AWS CLI then run:
 > **Note:** I configured the AWS CLI within an Ubuntu WSL on my Windows computer however, the Windows steps can be found in the link in Step 2 of the Prerequisites section
-```bash
 Run this command within your WSL:
+```bash
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install

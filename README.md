@@ -23,6 +23,8 @@
 
 ## Lab Overview
 
+---
+
 This is my cloud-based Security Operations Center (SOC) home lab built on AWS using Terraform. 
 This lab simulates a real SOC environment where you can:
 - Run attacks from a Kali Linux machine against a Windows Victim
@@ -57,11 +59,59 @@ Windows Victim
           └Splunk web UI - port 8000                             
 ```
 
+---
+
 ## Architecture
+
+---
 
 <img width="636" height="630" alt="image" src="https://github.com/user-attachments/assets/bf34485b-e463-49d5-8599-f32a2ee7af3c" />
 
+---
+
 ## Prerequisites
+
+---
+
+Before deploying the lab you need:
+1. AWS Account with credits or billing set up
+2. AWS CLI installed - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
+3. Terraform installed - https://developer.hashicorp.com/terraform/install#windows
+4. An AWS Key Pair created in your target region
+   -Go to AWS Console -> EC2 -> Key Pairs -> Create Key Pair (Key pair type should remain RSA  and the Private Key file        format should be changed to .pem if not already)
+   -Download the .pem file and keep it safe (you will need it to SSH later)
+5. Your public IP address - go to https://whatismyip.com/
+6. Kali Linux AWS Marketplace subscription
+   -Go to AWS Marketplace -> search "Kali Linux" -> Subscribe (it is free)
+   -Required before Terraform can launch the Kali Instance
+
+---
+
+## Terraform Files
+
+---
+
+This lab is defined across 5 Terraform files. Save all files in the same folder.
+
+### File Structure
+
+- variables.tf - Stores all variables for use in all .tf files below
+-config.tf - Sets the Cloud Provider and Version
+- main.tf - Provider, VPC, Subnet, Internet Gateway, and Route Table
+- instances.tf - AMI Lookups and EC2 Instances
+- security_groups.tf - Firewall rules for each machine
+- outputs.tf - IP's printed after Terraform apply
+- windows_userdata.ps1 - PowerShell script that runs on Windows first boot (Configures SUF and Sysmon on boot. Saves a lot of time... trust me xD)
+
+#### variables.tf
+Edit these defaults before deploying:
+
+| Variable | Default | What to Change |
+|---|---|---|
+| aws_region | us-east-2 | Change if you prefer a different region |
+| aws_key | YOUR KEY NAME HERE | Replace with your actual AWS key pair name (The one you made back in Step 4 of prequisites | 
+| my_public_ip | YOUR PUBLIC IP HERE/32 | Replace with your IP in CIDR format |
+
 
 
 

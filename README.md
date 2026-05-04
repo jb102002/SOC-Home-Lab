@@ -23,8 +23,6 @@
 
 ## Lab Overview
 
----
-
 This is my cloud-based Security Operations Center (SOC) home lab built on AWS using Terraform. 
 This lab simulates a real SOC environment where you can:
 - Run attacks from a Kali Linux machine against a Windows Victim
@@ -63,15 +61,11 @@ Windows Victim
 
 ## Architecture
 
----
-
 <img width="636" height="630" alt="image" src="https://github.com/user-attachments/assets/bf34485b-e463-49d5-8599-f32a2ee7af3c" />
 
 ---
 
 ## Prerequisites
-
----
 
 Before deploying the lab you need:
 1. AWS Account with credits or billing set up
@@ -88,8 +82,6 @@ Before deploying the lab you need:
 ---
 
 ## Terraform Files
-
----
 
 This lab is defined across 5 Terraform files. Save all files in the same folder.
 

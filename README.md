@@ -3,11 +3,11 @@
 
 ## Table of Contents
 
-1. Lab Overview
-2. Architecture
-3. Prerequisites
-4. Terraform Files
-5. Deploying the Lab
+1. [Lab Overview](#lab-overview)
+2. [Architecture](#architecture)
+3. [Prerequisites](#prerequisites)
+4. [Terraform Files](#terraform-files)
+5. [Deploying the Lab](#deploying-the-lab)
 6. Post-Deployment Configuration
 7. Intalling Splunk
 8. Configuring the Windows Victim

@@ -168,8 +168,18 @@ terraform apply -var="aws-key=REPLACE_WITH_NAME_OF_KEY_PAIR"
 ```
 > **Note:** Use the Key Pair you created in the EC2 section not the Access Key
 
+Type "yes" when prompted. Takes 3-5 minutes to complete
 
-
+5. #### Save your output IPs
+When complete, Terraform prints your IPs
+```
+kali_attacker_public_ip  = "x.x.x.x"
+splunk_private_ip        = "10.0.1.x"
+splunk_public_ip         = "x.x.x.x"
+windows_victim_public_ip = "x.x.x.x"
+```
+Save these. You need them for the rest of the setup.
+> **Note:** Public IPs change every time you stop and restart instances. Always get the current IP from the AWS Console or by running terraform output 
 
 
 

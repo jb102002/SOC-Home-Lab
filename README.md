@@ -138,16 +138,35 @@ nano credentials
 In your credentials file add the following:
 ```
 [default]
-aws_access_key_id = REPLACE_THIS_WITH_YOUR_PUBLIC_ACCESS_KEY
-aws_secret_access_key = REPLACE_THIS_WITH_YOUR_PRIVATE_ACCESS_KEY
+aws_access_key_id = REPLACE_WITH_YOUR_PUBLIC_ACCESS_KEY
+aws_secret_access_key = REPLACE_WITH_YOUR_PRIVATE_ACCESS_KEY
 ```
 
-### Step 2 - Initialize Terraform
+### Step 2 - Running Terraform
 
-1. #### 
+1. #### Clone the Github .tf Files
+Navigate to the new working directory and run:
+```bash
+git clone https://github.com/jb102002/SOC-Home-Lab.git
+```
+> **Note:** If git is not installed, simply run sudo apt install git
 
+2. #### Initialize Terraform
+```bash
+cd SOC-Home-Lab
+terraform init
+```
 
+3. #### Preview what will be created
+```bash
+terraform plan
+```
 
+4. #### Deploy the Lab
+```bash
+terraform apply -var="aws-key=REPLACE_WITH_NAME_OF_KEY_PAIR"
+```
+> **Note:** Use the Key Pair you created in the EC2 section not the Access Key
 
 
 

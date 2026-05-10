@@ -113,12 +113,12 @@ Edit these defaults before deploying:
 
 ### Step 1 - Configure AWS credentials
 
-1. #### Configure New User in AWS
+1. #### Configure new user in AWS
   - Go to AWS Console -> IAM -> IAM Users -> Create User
   - Create a username
   - Attach policies directly (AmazonVPCFullAccess + AmazonEC2FullAccess)
 
-2. #### Create an Access Key
+2. #### Create an access key
   - Under your newly created IAM User, create access key
   - Choose the "Other" use case
   - Copy your secret access key and save to a Notepad file (You will not be able to access this private key again)
@@ -144,7 +144,7 @@ aws_secret_access_key = REPLACE_WITH_YOUR_PRIVATE_ACCESS_KEY
 
 ### Step 2 - Running Terraform
 
-1. #### Clone the Github .tf Files
+1. #### Clone the Github .tf files
 Navigate to the new working directory and run:
 ```bash
 git clone https://github.com/jb102002/SOC-Home-Lab.git
@@ -162,7 +162,7 @@ terraform init
 terraform plan
 ```
 
-4. #### Deploy the Lab
+4. #### Deploy the lab
 ```bash
 terraform apply -var="aws-key=REPLACE_WITH_NAME_OF_KEY_PAIR"
 ```
@@ -185,7 +185,7 @@ Save these. You need them for the rest of the setup.
 
 ## Post-Deployment Configuration
 
-### Fix SSH Permissions (Windows PC - One Time Only)
+### Fix SSH permissions (Windows PC - One Time Only)
 
 SSH refuses to use the .pem key if other users on your PC can read it. Fix this in PowerShell:
 ```powershell
@@ -205,58 +205,65 @@ icacls $keyPath /grant:r "YOUR-WINDOWS-USERNAME:F"
 ssh -i "C:\path\to\your-key.pem" ubuntu@<splunk_public_ip>
 ```
 
-Type yes when asked about the host fingerprint — this is normal on first connection
+Type yes when asked about the host fingerprint - this is normal on first connection
 
 ### Step 2 - Download Splunk
 Get the latest download URL from https://www.splunk.com/en_us/download/splunk-enterprise.html
 
 - Sign in or create a free account
 - Select Linux and .tgz format
-- Right click Download Now → Copy link address
+- Right click Download Now -> Copy link address
 
+```bash
+wget -O splunk.tgz "PASTE-YOUR-DOWNLOAD-URL-HERE"
+```
 
+### Step 3 - Extract and install
 
+```bash
+sudo tar xvzf splunk.tgz -C /opt
+export SPLUNK_HOME=/opt/splunk
+sudo chown -R ubuntu:ubuntu /opt/splunk
+```
 
-
-
-
-
-
-
-
-SSH into Splunk Server
-
-ssh -i "C:\Users\user\AWS SOC Lab Terra\example.pem" ubuntu@1.2.3.4
-
-NOTE: Before using SSH to connect to Splunk Instance you may have to change the file permissions of your .pem file where you stored your SHH key pair
-
- Store the path in a variable to make it easier
-$keyPath = "C:\Users\user\AWS SOC Lab Terra\example.pem"
-
- Remove all inherited permissions
-icacls $keyPath /inheritance:r
-
- Remove the BUILTIN\Users group access
-icacls $keyPath /remove "BUILTIN\Users"
-
- Remove EVERYONE access just in case
-icacls $keyPath /remove "Everyone"
-
- Give only your user account full access
-icacls $keyPath /grant:r "user:F"
-
-
-#Configuring splunk server
-1. *sudo tar xvzf * must run sudo to extract to /opt
-
-2. export SPLUNK_HOME=/opt/splunk
+### Step 4 - Start Splunk
+```bash
 $SPLUNK_HOME/bin/splunk start --accept-license
+```
+> **Note:** It will ask you to create an admin username and password. Remember these - you need them to log into the web UI and run CLI commands.
 
-3. sudo chown -R ubuntu:ubuntu /opt/splunk *Ubuntu user does not own splunk folder*
+For convenience sake, run the command below to enable boot start for splunk
+```bash
+sudo /opt/splunk/bin/splunk enable boot-start -user ubuntu
+```
 
-sudo /opt/splunk/bin/splunk enable boot-start -user ubuntu *enable splunk to start on boot
+### Step 5 - Create indexes
+The Windows forwarder sends logs to indexes called windows and sysmon. Create them now or Splunk will reject the logs
+```bash
+/opt/splunk/bin/splunk add index windows -auth YOUR_USERNAME:YOUR_PASSWORD
+/opt/splunk/bin/splunk add index sysmon -auth YOUR_USERNAME:YOUR_PASSWORD
+```
 
-#Configuring universal forwarder on victim machine
-Script ran but had problem, I think the splunk universal forwarder path was not correct and needed to log in to website to get correct command
+### Step 6 - Enable Splunk to receive logs on port 9997
+This is required for the Splunk Universal Forwarder on Windows Victim to connect
+```bash
+/opt/splunk/bin/splunk enable listen 9997 -auth YOUR_USERNAME:YOUR_PASSWORD
+```
 
+### Step 7 - Restart Splunk
+```bash
+/opt/splunk/bin/splunk restart
+```
 
+### Step 8 - Verify Splunk is accessible
+Open your browser on your personal device and go to:
+```
+http://<splunk_public_ip>:8000
+```
+Log in with the credentials you created in Step 4.
+
+> **Important:** Use http:// not https:// and use the public IP not the private IP. The private IP (ip-10-0-1-x) is only reachable from inside AWS.
+
+---
+
+## Configuring the Windows Victim

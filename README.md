@@ -8,8 +8,8 @@
 3. [Prerequisites](#prerequisites)
 4. [Terraform Files](#terraform-files)
 5. [Deploying the Lab](#deploying-the-lab)
-6. Post-Deployment Configuration
-7. Intalling Splunk
+6. [Post-Deployment Configuration](#post-deployment-configuration)
+7. [Installing Splunk](#installing-splunk)
 8. Configuring the Windows Victim
 9. Installing the SUF
 10. Fixing Sysmon Permissions
@@ -181,6 +181,38 @@ windows_victim_public_ip = "x.x.x.x"
 Save these. You need them for the rest of the setup.
 > **Note:** Public IPs change every time you stop and restart instances. Always get the current IP from the AWS Console or by running terraform output 
 
+---
+
+## Post-Deployment Configuration
+
+### Fix SSH Permissions (Windows PC - One Time Only)
+
+SSH refuses to use the .pem key if other users on your PC can read it. Fix this in PowerShell:
+```powershell
+$keyPath = "C:\path\to\your\keyfilehere.pem"
+icacls $keyPath /inheritance:r
+icacls $keyPath /remove "BUILTIN\Users"
+icacls $keyPath /remove "Everyone"
+icacls $keyPath /grant:r "YOUR-WINDOWS-USERNAME:F"
+```
+
+---
+
+## Installing Splunk
+
+### Step 1 - SSH into the Splunk server
+```powershell
+ssh -i "C:\path\to\your-key.pem" ubuntu@<splunk_public_ip>
+```
+
+Type yes when asked about the host fingerprint — this is normal on first connection
+
+### Step 2 - Download Splunk
+Get the latest download URL from https://www.splunk.com/en_us/download/splunk-enterprise.html
+
+- Sign in or create a free account
+- Select Linux and .tgz format
+- Right click Download Now → Copy link address
 
 
 
@@ -191,17 +223,6 @@ Save these. You need them for the rest of the setup.
 
 
 
-
-            
-            
-Project Summary 
-
-terraform init
-terraform plan
-terraform apply 
-
-
-*Have to put terraform.exec in PATH
 
 SSH into Splunk Server
 

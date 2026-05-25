@@ -328,7 +328,7 @@ Go to https://www.splunk.com/en_us/download/universal-forwarder.html
 In PowerShell as Administrator, replace SPLUNK_PRIVATE_IP with your actual Splunk private IP from the Terraform output and replace the placeholder credentials with the credentials used to sign up for Splunk:
 ```powershell
 msiexec.exe /i "C:\SOCLab\splunkforwarder.msi" /quiet AGREETOLICENSE=Yes SPLUNKUSERNAME=admin SPLUNKPASSWORD=SOCLab123! RECEIVING_INDEXER=SPLUNK_PRIVATE_IP:9997
-
+```
 ### Step 3 - Start the forwarder
 ```powershell
 Start-Service SplunkForwarder

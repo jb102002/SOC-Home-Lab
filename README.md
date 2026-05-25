@@ -401,8 +401,10 @@ index=windows EventCode=5156 Source_Address=<kali_private_ip>
 
 <img width="1706" height="913" alt="actual splunk windows kali nmap scan" src="https://github.com/user-attachments/assets/567caa88-a0f4-4f71-bef9-33e7014640af" />
 
-
-
+### Attack 2 - Metasploit Reverse Shell Payload
+```powershell
+Set-MpPreference -DisableRealtimeMonitoring $true
+```
 
 
 

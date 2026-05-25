@@ -17,7 +17,6 @@
 12. Running Attacks from Kali
 13. What to Look For in Splunk
 14. Cost Management
-15. Troubleshooting
 16. Key Splunk Searches
 
 ---
@@ -89,13 +88,13 @@ This lab is defined across 5 Terraform files. Save all files in the same folder.
 
 ### File Structure
 
-- variables.tf - Stores all variables for use in all .tf files below
-- config.tf - Sets the Cloud Provider and Version
-- main.tf - Provider, VPC, Subnet, Internet Gateway, and Route Table
-- instances.tf - AMI Lookups and EC2 Instances
-- security_groups.tf - Firewall rules for each machine
-- outputs.tf - IP's printed after Terraform apply
-- windows_userdata.ps1 - PowerShell script that runs on Windows first boot (Configures SUF and Sysmon on boot. Saves a lot of time... trust me xD)
+- **variables.tf** - Stores all variables for use in all .tf files below
+- **config.tf** - Sets the Cloud Provider and Version
+- **main.tf** - Provider, VPC, Subnet, Internet Gateway, and Route Table
+- **instances.tf** - AMI Lookups and EC2 Instances
+- **security_groups.tf** - Firewall rules for each machine
+- **outputs.tf** - IP's printed after Terraform apply
+- **windows_userdata.ps1** - PowerShell script that runs on Windows first boot (Configures SUF and Sysmon on boot. Saves a lot of time... trust me xD)
 
 #### variables.tf
 
@@ -232,7 +231,7 @@ $SPLUNK_HOME/bin/splunk start --accept-license
 ```
 > **Note:** It will ask you to create an admin username and password. Remember these - you need them to log into the web UI and run CLI commands.
 
-For convenience sake, run the command below to enable boot start for splunk
+For convenience sake, run the command below to enable boot start for Splunk
 ```bash
 sudo /opt/splunk/bin/splunk enable boot-start -user ubuntu
 ```
@@ -262,8 +261,147 @@ http://<splunk_public_ip>:8000
 ```
 Log in with the credentials you created in Step 4.
 
-> **Important:** Use http:// not https:// and use the public IP not the private IP. The private IP (ip-10-0-1-x) is only reachable from inside AWS.
+---
+
+##Configuring the Windows Victim
+
+###Connecting via RDP
+1. Open Remote Desktop Connection on your PC
+2. Enter the Windows victim public IP in the Computer field
+3. Click Show Options -> set username to Administrator
+4. Get the Windows password from AWS:
+```
+AWS Console → EC2 → Instances → select Windows instance →
+Actions → Get Windows Password → upload your .pem file → Decrypt Password
+```
+5. Paste the decrypted password into RDP
+> **Note:** The Windows Administrator password from AWS has nothing to do with your Microsoft account password. It's a separate randomly generated password for the EC2 instance.
+
+> **Tip:** If RDP asks for your local PC credentials first, enter your Windows login. This is a security confirmation before opening the RDP session (it's separate from the AWS credentials).
+
+###Installing Sysmon
+Sysmon (System Monitor) is a free Microsoft tool that logs detailed system activity not captured by default Windows logs e.g. process creation with full command lines, network connections, file hashes, registry changes, and more.
+
+Open PowerShell as Administrator on the Windows victim and run:
+####Step 1 - Create a working directory
+```powershell
+New-Item -ItemType Directory -Force -Path "C:\SOCLab"
+```
+
+####Step 2 - Download Sysmon
+```powershell
+Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile "C:\SOCLab\Sysmon.zip"
+```
+
+####Step 3 - Extract Sysmon
+```powershell
+Expand-Archive -Path "C:\SOCLab\Sysmon.zip" -DestinationPath "C:\SOCLab\Sysmon"
+```
+
+####Step 4 - Download SwiftOnSecurity config
+This is the industry standard Sysmon config used to filter noise and highlight suspicious activity:
+```powershell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml" -OutFile "C:\SOCLab\sysmonconfig.xml"
+```
+
+####Step 5 - Install Sysmon as a service
+```powershell
+C:\SOCLab\Sysmon\Sysmon64.exe -accepteula -i C:\SOCLab\sysmonconfig.xml
+```
+
+####Step 6 - Verify Sysmon is running
+```powershell
+Get-Service Sysmon64
+```
+Should show **Running**
 
 ---
 
-## Configuring the Windows Victim
+##Installing the SUF
+
+###Step 1 - Download the installer
+Go to https://www.splunk.com/en_us/download/universal-forwarder.html
+- Download the 64-bit Windows .msi file
+- Save it to C:\SOCLab\splunkforwarder.msi
+
+###Step 2 - Install the forwarder
+In PowerShell as Administrator, replace SPLUNK_PRIVATE_IP with your actual Splunk private IP from the Terraform output and replace the placeholder credentials with the credentials used to sign up for Splunk:
+```powershell
+msiexec.exe /i "C:\SOCLab\splunkforwarder.msi" /quiet AGREETOLICENSE=Yes SPLUNKUSERNAME=admin SPLUNKPASSWORD=SOCLab123! RECEIVING_INDEXER=SPLUNK_PRIVATE_IP:9997
+
+###Step 3 - Start the forwarder
+```powershell
+Start-Service SplunkForwarder
+```
+
+###Step 4 - Verify the forwarder is pointing at Splunk
+```powershell
+& "C:\Program Files\SplunkUniversalForwarder\bin\splunk.exe" list forward-server -auth admin:SOCLab123!
+```
+
+---
+
+##Fixing Sysmon Permissions
+By default the SplunkForwarder service does not have permission to read the Sysmon event log channel. You will see errors like could not subscribe to Windows event log channel in the forwarder logs.
+
+###The only solution I have found is running as LocalSystem:
+```powershell
+Stop-Service SplunkForwarder
+sc.exe config SplunkForwarder obj= "LocalSystem"
+Start-Service SplunkForwarder
+```
+This gives the forwarder full access to all event log channels
+> **Note:** Running as LocalSystem is fine for a lab. In production environments a dedicated service account with minimum permissions would be used instead.
+
+###Verify the fix worked
+Check the forwarder log for errors:
+```powershell
+Get-Content "C:\Program Files\SplunkUniversalForwarder\var\log\splunk\splunkd.log" | Select-String "Sysmon" | Select-Object -Last 20
+```
+If you no longer see could not subscribe errors the fix worked.
+
+---
+
+##Verifying Logs in Splunk
+Open the Splunk web UI at http://<splunk_public_ip>:8000 and go to **Search & Reporting**.
+
+###Check Windows logs are flowing:
+```
+index=windows
+```
+You should see Security, System, and Application events from EC2AMAZ-XXXXXXX.
+
+###Check Sysmon logs are flowing
+```
+index=sysmon
+```
+You should see XML formatted Sysmon events. EventID 1 (process creation) is the most common.
+
+---
+
+##Running Attacks from Kali
+
+###SSH into Kali
+```powershell
+ssh -i "C:\path\to\your-key.pem" kali@<kali_public_ip>
+```
+
+###Attack 1 - Port Scan using nmap
+```bash
+nmap -sV <windows_private_ip>
+```
+**Expected results:** Ports 3389 (RDP) and 5985 (WinRM) open:
+
+<img width="1112" height="608" alt="kali nmap scan" src="https://github.com/user-attachments/assets/0fe28763-0553-4649-b04f-48688a484d24" />
+
+####Detect in Splunk 
+```
+index=windows EventCode=5156 Source_Address=<kali_private_ip>
+```
+
+
+
+
+
+
+

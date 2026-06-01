@@ -10,14 +10,15 @@
 5. [Deploying the Lab](#deploying-the-lab)
 6. [Post-Deployment Configuration](#post-deployment-configuration)
 7. [Installing Splunk](#installing-splunk)
-8. Configuring the Windows Victim
-9. Installing the SUF
-10. Fixing Sysmon Permissions
-11. Verifying Logs in Splunk
-12. Running Attacks from Kali
-13. What to Look For in Splunk
-14. Cost Management
-16. Key Splunk Searches
+8. [Configuring the Windows Victim](#configuring-the-windows-victim)
+9. [Installing the SUF](#installing-the-suf)
+10. [Fixing Sysmon Permissions](#fixing-sysmon-permissions)
+11. [Verifying Logs in Splunk](#verifying-logs-in-splunk)
+12. [Running Attacks from Kali](#running-attacks-from-kali)
+13. [What to Look For in Splunk](#what-to-look-for-in-splunk)
+14. [Key Splunk Searches](#key-splunk-searches)
+15. [Cost Management](#key-splunk-searches)
+
 
 ---
 
@@ -430,10 +431,17 @@ index=sysmon EventID=3
 
 <img width="1625" height="654" alt="real sysmon log" src="https://github.com/user-attachments/assets/2c342f73-55c2-4e3e-9a87-2b73fe86dc2e" />
 
+This was the moment I realised I did not set an ingress rule for the Kali Machine for the listening port of 4444 but you get the point. If you want to play around with some reverse listeners on the Kali Machine, just add another ingress rule in the security_groups.tf file e.g.
+```terraform 
+ingress { 
+     description = "Listener"
+     from_port   = "4444"
+     to_port     = "4444"
+     protocol    = "tcp"
+     cidr_blocks = [var.vpc_cidr]
+}
 
+---
 
-
-
-
-
+##What to Look For in Splunk
 

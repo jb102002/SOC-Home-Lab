@@ -17,7 +17,7 @@
 12. [Running Attacks from Kali](#running-attacks-from-kali)
 13. [What to Look For in Splunk](#what-to-look-for-in-splunk)
 14. [Key Splunk Searches](#key-splunk-searches)
-15. [Cost Management](#key-splunk-searches)
+15. [Cost Management](#cost-management)
 
 
 ---

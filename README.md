@@ -553,7 +553,7 @@ index=sysmon OR index=windows | sort _time | table _time index EventID EventCode
 ### Estimated costs (us-east-2)
 
 | Resource | Instance Type | Est. Cost/Hour | Est. Cost/Day | Est. Cost/Month |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|
 | Splunk Server | m7i-flex.large | ~$0.048 | ~$1.15 | ~$35 |
 | Windows Victim | t3.small | ~$0.021 | ~$0.50 | ~$15 |
 | Kali Attacker | t3.small | ~$0.021 | ~$0.50 | ~$15 |

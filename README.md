@@ -382,6 +382,8 @@ You should see XML formatted Sysmon events. EventID 1 (process creation) is the 
 
 ## Running Attacks from Kali
 
+Here will be a couple examples of some basic reconnaisance/attacks an attacker might use.
+
 ### SSH into Kali
 ```powershell
 ssh -i "C:\path\to\your-key.pem" kali@<kali_public_ip>
@@ -431,7 +433,7 @@ index=sysmon EventID=3
 
 <img width="1625" height="654" alt="real sysmon log" src="https://github.com/user-attachments/assets/2c342f73-55c2-4e3e-9a87-2b73fe86dc2e" />
 
-This was the moment I realised I did not set an ingress rule for the Kali Machine for the listening port of 4444 but you get the point. If you want to play around with some reverse listeners on the Kali Machine, just add another ingress rule in the security_groups.tf file e.g.
+**This was the moment I realised I did not set an ingress rule for the Kali Machine for the listening port of 4444 but you get the point. If you want to play around with some reverse listeners on the Kali Machine, just add another ingress rule in the security_groups.tf file e.g.:**
 ```terraform 
 ingress { 
      description = "Listener"
@@ -440,8 +442,134 @@ ingress {
      protocol    = "tcp"
      cidr_blocks = [var.vpc_cidr]
 }
+```
 
 ---
 
 ##What to Look For in Splunk
 
+###Windows Index - Good for detecting inbound attacks
+
+| EventCode | What It Means | Attack Scenario |
+|---|---|---|
+| 4624 | Successful logon | Someone logged in |
+| 4625 | Failed logon | Brute force attempt | 
+| 4672 | Privileged logon | Privilege escalation |
+| 4688 | Process created | Malicious process ran |
+| 4720 | User account created | Attacker created backdoor account |
+| 4732 | User added to group | Privilege escalation |
+| 5156 | Firewall allowed connection | Network scan or attack traffic |
+| 5152 | Firewall blocked connection | Blocked attack attempt |
+
+###Sysmon Index - Good for detecting inbound attacks
+
+| EventID | What It Means | Attack Scenario |
+|---|---|---|
+| 1 | Process created | Every command run after exploitation |
+| 3 | Network connection | Reverse shell phoning home to Kali | 
+| 7 | Image loaded | DLL injection by malware |
+| 8 | Remote thread created | Process injection |
+| 10 | Process accessed | Mimikatz dumping credentials from LSASS |
+| 11 | File created | Malware dropped on disk |
+| 12/13 | Registry modified | Malware adding persistence |
+| 22 | DNS query | Malware looking up C2 server |
+
+###Understanding the difference
+
+####index=windows tells you what happened from the OS perspective:
+- Someone failed to log in 100 times (brute force)
+- A new user account was created (persistence)
+- A connection was allowed through the firewall (network attack)
+
+####index=sysmon tells you how it happened and what the attacker did after getting in:
+- cmd.exe was spawned by malware.exe (execution)
+- net user hacker Password1 /add was run (account creation)
+- A file was dropped at C:\Windows\Temp\backdoor.exe (malware staging)
+- A connection was made back to Kali on port 4444 (reverse shell)
+
+####Together they give you the complete picture of an attack.
+
+---
+
+##Key Splunk Searches
+
+###General
+```
+# See everything in the last 24 hours
+index=windows | head 100
+
+# Count events by type
+index=windows | stats count by EventCode | sort -count
+index=sysmon | stats count by EventID | sort -count
+```
+
+###Detect port scans
+```
+index=windows EventCode=5156 Direction=Inbound
+index=windows EventCode=5156 Source_Address=<kali_private_ip>
+```
+
+###Detect brute force attempts
+```
+index=windows EventCode=4625
+index=windows EventCode=4625 | stats count by Source_Network_Address | sort -count
+```
+
+###Detect successful logins after brute force
+```
+index=windows EventCode=4624
+```
+
+###Detect process creation (post exploitation)
+```
+index=sysmon EventID=1
+index=sysmon EventID=1 | table _time Image CommandLine User ParentImage
+```
+
+###Detect credential dumping 
+```
+index=sysmon EventID=10 TargetImage="*lsass*"
+```
+
+###Detect malware persistence via registry
+```
+index=sysmon EventID=13
+```
+
+###Detect files dropped on disk
+```
+index=sysmon EventID=11
+```
+
+###Full attack timeline
+```
+index=sysmon OR index=windows | sort _time | table _time index EventID EventCode Image CommandLine Source_Address Destination_Address
+```
+
+---
+
+##Cost Management
+
+###Estimated costs (us-east-2)
+
+| Resource | Instance Type | Est. Cost/Hour | Est. Cost/Day | Est. Cost/Month |
+|---|---|---|---|---|---|---|---|
+| Splunk Server | m7i-flex.large | ~$0.048 | ~$1.15 | ~$35 |
+| Windows Victim | t3.small | ~$0.021 | ~$0.50 | ~$15 |
+| Kali Attacker | t3.small | ~$0.021 | ~$0.50 | ~$15 |
+| EBS Storage | 115GB gp3 | — | ~$0.30 | ~$9 |
+| **Total** | | | **~$2.45** | **~$74** |
+
+> **Important:** AWS does not automatically stop instances when credits run out
+
+###Things to note
+- If you are on an AWS credits program your instances will stop working when credits are depleted but you will not be charged to a credit card. If you are on a standard AWS account you will be charged beyond your free tier. **Set up a billing alert** (this can be done through creating a cost budget within the Billing section in the AWS Console). 
+- Save money by stopping instances when not in use (this can be doen through the instance state dropdown within the instances section under EC2). This drastically reduces costs compared to the estimated cost in the figure above.
+- Destroy the lab completely when done using:
+     ```powershell
+       terraform destroy
+     ```
+     This permanently deletes everything and stops all charges. You can redeploy from scratch anytime with terraform apply.
+
+---
+*Built as a personal SOC home lab by Jacob Boinski for learning threat detection, log analysis, and incident response.*

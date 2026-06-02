@@ -446,9 +446,9 @@ ingress {
 
 ---
 
-##What to Look For in Splunk
+## What to Look For in Splunk
 
-###Windows Index - Good for detecting inbound attacks
+### Windows Index - Good for detecting inbound attacks
 
 | EventCode | What It Means | Attack Scenario |
 |---|---|---|
@@ -461,7 +461,7 @@ ingress {
 | 5156 | Firewall allowed connection | Network scan or attack traffic |
 | 5152 | Firewall blocked connection | Blocked attack attempt |
 
-###Sysmon Index - Good for detecting inbound attacks
+### Sysmon Index - Good for detecting inbound attacks
 
 | EventID | What It Means | Attack Scenario |
 |---|---|---|
@@ -474,26 +474,26 @@ ingress {
 | 12/13 | Registry modified | Malware adding persistence |
 | 22 | DNS query | Malware looking up C2 server |
 
-###Understanding the difference
+### Understanding the difference
 
-####index=windows tells you what happened from the OS perspective:
+#### index=windows tells you what happened from the OS perspective:
 - Someone failed to log in 100 times (brute force)
 - A new user account was created (persistence)
 - A connection was allowed through the firewall (network attack)
 
-####index=sysmon tells you how it happened and what the attacker did after getting in:
+#### index=sysmon tells you how it happened and what the attacker did after getting in:
 - cmd.exe was spawned by malware.exe (execution)
 - net user hacker Password1 /add was run (account creation)
 - A file was dropped at C:\Windows\Temp\backdoor.exe (malware staging)
 - A connection was made back to Kali on port 4444 (reverse shell)
 
-####Together they give you the complete picture of an attack.
+#### Together they give you the complete picture of an attack.
 
 ---
 
-##Key Splunk Searches
+## Key Splunk Searches
 
-###General
+### General
 ```
 # See everything in the last 24 hours
 index=windows | head 100
@@ -503,54 +503,54 @@ index=windows | stats count by EventCode | sort -count
 index=sysmon | stats count by EventID | sort -count
 ```
 
-###Detect port scans
+### Detect port scans
 ```
 index=windows EventCode=5156 Direction=Inbound
 index=windows EventCode=5156 Source_Address=<kali_private_ip>
 ```
 
-###Detect brute force attempts
+### Detect brute force attempts
 ```
 index=windows EventCode=4625
 index=windows EventCode=4625 | stats count by Source_Network_Address | sort -count
 ```
 
-###Detect successful logins after brute force
+### Detect successful logins after brute force
 ```
 index=windows EventCode=4624
 ```
 
-###Detect process creation (post exploitation)
+### Detect process creation (post exploitation)
 ```
 index=sysmon EventID=1
 index=sysmon EventID=1 | table _time Image CommandLine User ParentImage
 ```
 
-###Detect credential dumping 
+### Detect credential dumping 
 ```
 index=sysmon EventID=10 TargetImage="*lsass*"
 ```
 
-###Detect malware persistence via registry
+### Detect malware persistence via registry
 ```
 index=sysmon EventID=13
 ```
 
-###Detect files dropped on disk
+### Detect files dropped on disk
 ```
 index=sysmon EventID=11
 ```
 
-###Full attack timeline
+### Full attack timeline
 ```
 index=sysmon OR index=windows | sort _time | table _time index EventID EventCode Image CommandLine Source_Address Destination_Address
 ```
 
 ---
 
-##Cost Management
+## Cost Management
 
-###Estimated costs (us-east-2)
+### Estimated costs (us-east-2)
 
 | Resource | Instance Type | Est. Cost/Hour | Est. Cost/Day | Est. Cost/Month |
 |---|---|---|---|---|---|---|---|
@@ -562,7 +562,7 @@ index=sysmon OR index=windows | sort _time | table _time index EventID EventCode
 
 > **Important:** AWS does not automatically stop instances when credits run out
 
-###Things to note
+### Things to note
 - If you are on an AWS credits program your instances will stop working when credits are depleted but you will not be charged to a credit card. If you are on a standard AWS account you will be charged beyond your free tier. **Set up a billing alert** (this can be done through creating a cost budget within the Billing section in the AWS Console). 
 - Save money by stopping instances when not in use (this can be doen through the instance state dropdown within the instances section under EC2). This drastically reduces costs compared to the estimated cost in the figure above.
 - Destroy the lab completely when done using:

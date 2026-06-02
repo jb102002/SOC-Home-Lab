@@ -382,7 +382,7 @@ You should see XML formatted Sysmon events. EventID 1 (process creation) is the 
 
 ## Running Attacks from Kali
 
-Here will be a couple examples of some basic reconnaisance/attacks an attacker might use.
+Here will be a couple examples of some basic active reconnaissance/attacks an attacker might use.
 
 ### SSH into Kali
 ```powershell

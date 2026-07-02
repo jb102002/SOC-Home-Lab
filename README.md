@@ -266,7 +266,7 @@ Log in with the credentials you created in Step 4.
 
 ## Configuring the Windows Victim
 
-If you wish to configure the Windows Victim manually or something goes wrong with the script, you can follow this section. 
+If you wish to configure the Windows Victim manually or something goes wrong with the script, you can follow this section. In the first iteration of the .ps1 script there was some issues with the code and required manual configuration. These have been corrected since then.
 
 ### Connecting via RDP
 1. Open Remote Desktop Connection on your PC

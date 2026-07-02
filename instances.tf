@@ -72,7 +72,7 @@ resource "aws_instance" "windows_victim" {
 
     user_data = templatefile("${path.module}/windows_userdata.ps1", {
         splunk_private_ip = aws_instance.splunk.private_ip
-    }
+    })
 
     root_block_device {
         volume_size = 40 # Windows needs more disk space than Linux — 40GB is comfortable

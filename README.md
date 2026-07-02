@@ -266,6 +266,8 @@ Log in with the credentials you created in Step 4.
 
 ## Configuring the Windows Victim
 
+If you wish to configure the Windows Victim manually or something goes wrong with the script, you can follow this section. 
+
 ### Connecting via RDP
 1. Open Remote Desktop Connection on your PC
 2. Enter the Windows victim public IP in the Computer field
